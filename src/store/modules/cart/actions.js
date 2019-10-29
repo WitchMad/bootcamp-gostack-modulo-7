@@ -1,6 +1,12 @@
-export function addToCart(product) {
+export function addToCart(id) {
   return {
-    type: '@cart/ADD',
+    type: '@cart/ADD_REQUEST',
+    id,
+  };
+}
+export function addToCartSuccess(product) {
+  return {
+    type: '@cart/ADD_SUCESS',
     product,
   };
 }
