@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
+import PropTypes from 'prop-types';
 import { FormatPrice } from '../../util/format';
 import api from '../../services/api';
 
@@ -12,6 +13,11 @@ import { ProductList } from './styles';
 class Home extends Component {
   state = {
     products: [],
+  };
+
+  static propTypes = {
+    addToCart: PropTypes.func.isRequired,
+    amount: PropTypes.arrayOf.isRequired,
   };
 
   async componentDidMount() {

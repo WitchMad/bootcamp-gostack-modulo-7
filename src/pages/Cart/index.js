@@ -6,12 +6,20 @@ import {
   MdRemoveShoppingCart,
 } from 'react-icons/md';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import * as CartActions from '../../store/modules/cart/actions';
 import { Container, ProductTable, Total } from './styles';
 import { FormatPrice } from '../../util/format';
 
 function Cart({ cart, total, removeFromCart, updateAmountRequest }) {
+  Cart.propTypes = {
+    cart: PropTypes.shape().isRequired,
+    total: PropTypes.string.isRequired,
+    removeFromCart: PropTypes.func.isRequired,
+    updateAmountRequest: PropTypes.func.isRequired,
+  };
+
   function increment(product) {
     updateAmountRequest(product.id, product.amount + 1);
   }
