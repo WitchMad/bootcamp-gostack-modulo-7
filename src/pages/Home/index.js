@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
 import PropTypes from 'prop-types';
+import Lottie from 'react-lottie';
+import animationData from '../../assets/animations/1712-bms-rocket.json';
 import { FormatPrice } from '../../util/format';
 import api from '../../services/api';
 
@@ -13,11 +15,12 @@ import { ProductList } from './styles';
 class Home extends Component {
   state = {
     products: [],
+    loading: true,
   };
 
   static propTypes = {
     addToCart: PropTypes.func.isRequired,
-    amount: PropTypes.arrayOf.isRequired,
+    amount: PropTypes.shape().isRequired,
   };
 
   async componentDidMount() {
@@ -28,7 +31,7 @@ class Home extends Component {
       priceFormatted: FormatPrice(product.price),
     }));
 
-    this.setState({ products: data });
+    this.setState({ products: data, loading: false });
   }
 
   handleAddProduct = id => {
@@ -39,30 +42,44 @@ class Home extends Component {
   };
 
   render() {
-    const { products } = this.state;
+    const { products, loading } = this.state;
     const { amount } = this.props;
+    const defaultOptions = {
+      loop: true,
+      autoplay: true,
+      animationData,
+      rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice',
+      },
+    };
     return (
-      <ProductList>
-        {products.map(product => (
-          <li key={product.id}>
-            <img src={product.image} alt={product.title} />
-            <strong>{product.title}</strong>
-            <span>{product.priceFormatted}</span>
+      <>
+        {loading ? (
+          <Lottie options={defaultOptions} height={400} width={400} />
+        ) : (
+          <ProductList>
+            {products.map(product => (
+              <li key={product.id}>
+                <img src={product.image} alt={product.title} />
+                <strong>{product.title}</strong>
+                <span>{product.priceFormatted}</span>
 
-            <button
-              type="button"
-              onClick={() => this.handleAddProduct(product.id)}
-            >
-              <div>
-                <MdAddShoppingCart size={16} color="#fff" />
-                {amount[product.id] || 0}
-              </div>
+                <button
+                  type="button"
+                  onClick={() => this.handleAddProduct(product.id)}
+                >
+                  <div>
+                    <MdAddShoppingCart size={16} color="#fff" />
+                    {amount[product.id] || 0}
+                  </div>
 
-              <span>Adicionar ao carrinho</span>
-            </button>
-          </li>
-        ))}
-      </ProductList>
+                  <span>Adicionar ao carrinho</span>
+                </button>
+              </li>
+            ))}
+          </ProductList>
+        )}
+      </>
     );
   }
 }

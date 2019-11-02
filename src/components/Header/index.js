@@ -1,12 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { MdShoppingBasket } from 'react-icons/md';
 
 import { Container, Cart } from './styles';
 import logo from '../../assets/images/logo.svg';
 
 function Header({ cartSize }) {
+  Header.propTypes = {
+    cartSize: PropTypes.number.isRequired,
+  };
   return (
     <Container>
       <Link to="/">

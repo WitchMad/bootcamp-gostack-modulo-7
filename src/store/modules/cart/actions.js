@@ -16,6 +16,11 @@ export function removeFromCart(id) {
     id,
   };
 }
+export function cleanCart() {
+  return {
+    type: '@cart/CLEAN',
+  };
+}
 export function updateAmountRequest(id, amount) {
   return {
     type: '@cart/UPDATE_AMOUNT_REQUEST',
