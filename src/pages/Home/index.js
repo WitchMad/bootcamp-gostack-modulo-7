@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { MdAddShoppingCart } from 'react-icons/md';
-import PropTypes from 'prop-types';
 import Lottie from 'react-lottie';
 import animationData from '../../assets/animations/1712-bms-rocket.json';
 import { FormatPrice } from '../../util/format';
@@ -12,14 +10,18 @@ import * as CartActions from '../../store/modules/cart/actions';
 
 import { ProductList } from './styles';
 
-function Home({ amount, addToCart }) {
+export default function Home() {
   const [products, setProduct] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  Home.propTypes = {
-    addToCart: PropTypes.func.isRequired,
-    amount: PropTypes.shape().isRequired,
-  };
+  const amount = useSelector(state =>
+    state.cart.reduce((amountVar, product) => {
+      amountVar[product.id] = product.amount;
+      return amountVar;
+    }, {})
+  );
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function loadProducts() {
@@ -39,7 +41,7 @@ function Home({ amount, addToCart }) {
 
   function handleAddProduct(id) {
     // Dispara a ação
-    addToCart(id);
+    dispatch(CartActions.addToCart(id));
   }
   const defaultOptions = {
     loop: true,
@@ -79,16 +81,3 @@ function Home({ amount, addToCart }) {
     </>
   );
 }
-const mapStateToProps = state => ({
-  amount: state.cart.reduce((amount, product) => {
-    amount[product.id] = product.amount;
-    return amount;
-  }, {}),
-});
-const mapDispatchToProps = dispatch =>
-  bindActionCreators(CartActions, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Home);
