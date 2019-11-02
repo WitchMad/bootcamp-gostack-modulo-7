@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { MdAddShoppingCart } from 'react-icons/md';
@@ -12,76 +12,72 @@ import * as CartActions from '../../store/modules/cart/actions';
 
 import { ProductList } from './styles';
 
-class Home extends Component {
-  state = {
-    products: [],
-    loading: true,
-  };
+function Home({ amount, addToCart }) {
+  const [products, setProduct] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  static propTypes = {
+  Home.propTypes = {
     addToCart: PropTypes.func.isRequired,
     amount: PropTypes.shape().isRequired,
   };
 
-  async componentDidMount() {
-    const response = await api.get('/products');
+  useEffect(() => {
+    async function loadProducts() {
+      const response = await api.get('/products');
 
-    const data = response.data.map(product => ({
-      ...product,
-      priceFormatted: FormatPrice(product.price),
-    }));
+      const data = response.data.map(product => ({
+        ...product,
+        priceFormatted: FormatPrice(product.price),
+      }));
 
-    this.setState({ products: data, loading: false });
-  }
+      setProduct(data);
+      setLoading(false);
+    }
 
-  handleAddProduct = id => {
+    loadProducts();
+  }, []);
+
+  function handleAddProduct(id) {
     // Dispara a ação
-    const { addToCart } = this.props;
-
     addToCart(id);
-  };
-
-  render() {
-    const { products, loading } = this.state;
-    const { amount } = this.props;
-    const defaultOptions = {
-      loop: true,
-      autoplay: true,
-      animationData,
-      rendererSettings: {
-        preserveAspectRatio: 'xMidYMid slice',
-      },
-    };
-    return (
-      <>
-        {loading ? (
-          <Lottie options={defaultOptions} height={400} width={400} />
-        ) : (
-          <ProductList>
-            {products.map(product => (
-              <li key={product.id}>
-                <img src={product.image} alt={product.title} />
-                <strong>{product.title}</strong>
-                <span>{product.priceFormatted}</span>
-
-                <button
-                  type="button"
-                  onClick={() => this.handleAddProduct(product.id)}
-                >
-                  <div>
-                    <MdAddShoppingCart size={16} color="#fff" />
-                    {amount[product.id] || 0}
-                  </div>
-
-                  <span>Adicionar ao carrinho</span>
-                </button>
-              </li>
-            ))}
-          </ProductList>
-        )}
-      </>
-    );
   }
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData,
+    rendererSettings: {
+      preserveAspectRatio: 'xMidYMid slice',
+    },
+  };
+  return (
+    <>
+      {loading ? (
+        <Lottie options={defaultOptions} height={400} width={400} />
+      ) : (
+        <ProductList>
+          {products.map(product => (
+            <li key={product.id}>
+              <img src={product.image} alt={product.title} />
+              <strong>{product.title}</strong>
+              <span>{product.priceFormatted}</span>
+
+              <button
+                type="button"
+                onClick={() => handleAddProduct(product.id)}
+              >
+                <div>
+                  <MdAddShoppingCart size={16} color="#fff" />
+                  {amount[product.id] || 0}
+                </div>
+
+                <span>Adicionar ao carrinho</span>
+              </button>
+            </li>
+          ))}
+        </ProductList>
+      )}
+    </>
+  );
 }
 const mapStateToProps = state => ({
   amount: state.cart.reduce((amount, product) => {
